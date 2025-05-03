@@ -1,0 +1,23 @@
+{
+    "appTitle": "நிதி கண்காணிப்பு",
+    "connectionIssue": "இணைப்பு பிரச்சினை",
+    "retryConnection": "இணைப்பை மீண்டும் முயற்சிக்கவும்",
+    "loading": "ஏற்றுகிறது...",
+    "preparingData": "உங்கள் தரவை தயார் செய்கிறது...",
+    "failedToLoadData": "தரவை ஏற்ற முடியவில்லை: {error}",
+    "newTransaction": "புதிய பரிவர்த்தனை",
+    "dashboard": "டாஷ்போர்டு",
+    "financialGoals": "நிதி இலக்குகள்",
+    "history": "வரலாறு",
+    "add": "சேர்",
+    "goals": "இலக்குகள்",
+    "logout": "வெளியேறு",
+    "selectLanguage": "மொழியைத் தேர்ந்தெடு",
+    "english": "ஆங்கிலம்",
+    "tamil": "தமிழ்",
+    "hindi": "ஹிந்தி",
+    "signedInWith": "{method} உடன் உள்நுழைந்தது",
+    "emailPassword": "மின்னஞ்சல்/கடவுச்சொல்",
+    "google": "கூகுள்",
+    "profile": "சுயவிவரம்"
+}

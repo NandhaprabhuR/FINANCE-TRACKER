@@ -1,0 +1,23 @@
+{
+  "appTitle": "Financial Tracker",
+  "connectionIssue": "Connection Issue",
+  "retryConnection": "Retry Connection",
+  "loading": "Loading...",
+  "preparingData": "Preparing your data...",
+  "failedToLoadData": "Failed to load data: {error}",
+  "newTransaction": "New Transaction",
+  "dashboard": "Dashboard",
+  "financialGoals": "Financial Goals",
+  "history": "History",
+  "add": "Add",
+  "goals": "Goals",
+  "logout": "Logout",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "tamil": "Tamil",
+  "hindi": "Hindi",
+  "signedInWith": "Signed in with {method}",
+  "emailPassword": "Email/Password",
+  "google": "Google",
+  "profile": "Profile"
+}
