@@ -1,16 +1,12 @@
-# ft
+#
 
-A new Flutter project.
+THIS IS THE PROJECT CALLED AS FINANCE TRACKER. 
+THIS APP CAN TRACK BOTH INCOME AND EXPENSES, GOALS, REMAINDERS LIKE LOAN, FEES, RENT, ETC...
+ALL THE DATA IS STORED IN FIREBASE, FIRESTORE USING AUTHENTICATION.
+THE ML MODEL IS USED TO SUGGEST THE USER TO THE DESCRIPTION AS IF "STARBUCKS = 5$ " , THIS COMES UNDER THE CATEGORY OF FOOD AND BEVERAGE
+THE ML MODEL IS GIVEN IN THE ANOTHER REPOSITORY CALLED  AT FINANCE TRACKER MODELS, HAVE TO RUN USING FASTAPI LOCAL SERVER BECAUSE THE MODLEL IS UNABLE TO HOST IN THE SERVER, BECAUSE OF HUGE PAYMENT. 
+THIS APP SUPPORTS ALL THE DETILS ABOUT THE FINANCE BASED DESCRIPTION.
+ALSO INTERGRATED THE GOOGLE GEMINI TO GET QUICK AND MORE INFO ABOUT THE FINANCE.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#
