@@ -1,4 +1,4 @@
-name: ft
+name: moneynest
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
@@ -13,9 +13,9 @@ dependencies:
   intl: ^0.18.0
   google_fonts: ^6.1.0
   fl_chart: ^0.68.0
-  firebase_core: ^2.32.0  # Use a known stable version; update if needed
-  firebase_auth: ^4.20.0  # Align with firebase_core
-  cloud_firestore: ^4.17.5  # Align with firebase_core
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
   google_sign_in: ^6.1.6
   connectivity_plus: ^5.0.2
   cupertino_icons: ^1.0.8
@@ -23,7 +23,7 @@ dependencies:
   shared_preferences: ^2.3.2
   flutter_gemini: ^3.0.0
   image_picker: ^1.1.2
-
+  flutter_launcher_icons: ^0.13.1
   http: ^1.2.2
 
 dev_dependencies:
@@ -33,3 +33,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/MH.png
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/MH.png"

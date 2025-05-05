@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models.dart';
 import 'dataprovider.dart';
+import 'profile.dart';
 
 class TransactionForm extends StatefulWidget {
   const TransactionForm({super.key});
@@ -110,9 +112,9 @@ class TransactionFormState extends State<TransactionForm> {
   Widget build(BuildContext context) {
     final categories = _type == 'income' ? _incomeCategories : _expenseCategories;
 
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
+    return Stack(
+      children: [
+        CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
@@ -120,20 +122,7 @@ class TransactionFormState extends State<TransactionForm> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.monetization_on, color: Color(0xFF1f2937)),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Add New Transaction',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF555555),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 60),
                     Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -156,19 +145,19 @@ class TransactionFormState extends State<TransactionForm> {
                                   ),
                                   child: Text(
                                     _message!,
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                       color: _messageColor,
                                     ),
                                   ),
                                 ),
-                              const Text(
+                              Text(
                                 'Transaction Type',
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF374151),
+                                  color: Theme.of(context).colorScheme.onBackground,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -185,10 +174,11 @@ class TransactionFormState extends State<TransactionForm> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: _type == 'expense'
                                             ? const Color(0xFFef4444)
-                                            : Colors.white,
-                                        foregroundColor:
-                                        _type == 'expense' ? Colors.white : const Color(0xFF374151),
-                                        side: const BorderSide(color: Color(0xFFd1d5db)),
+                                            : Theme.of(context).colorScheme.surface,
+                                        foregroundColor: _type == 'expense'
+                                            ? Colors.white
+                                            : Theme.of(context).colorScheme.onSurface,
+                                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -215,11 +205,13 @@ class TransactionFormState extends State<TransactionForm> {
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                        _type == 'income' ? const Color(0xFF10b981) : Colors.white,
-                                        foregroundColor:
-                                        _type == 'income' ? Colors.white : const Color(0xFF374151),
-                                        side: const BorderSide(color: Color(0xFFd1d5db)),
+                                        backgroundColor: _type == 'income'
+                                            ? const Color(0xFF10b981)
+                                            : Theme.of(context).colorScheme.surface,
+                                        foregroundColor: _type == 'income'
+                                            ? Colors.white
+                                            : Theme.of(context).colorScheme.onSurface,
+                                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -397,7 +389,22 @@ class TransactionFormState extends State<TransactionForm> {
             ),
           ],
         ),
-      ),
+        Positioned(
+          top: 16,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Text(
+              'Add New Transaction',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

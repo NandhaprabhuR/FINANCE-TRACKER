@@ -126,4 +126,12 @@ class DataProvider with ChangeNotifier {
       throw Exception('Failed to fetch goals: $e');
     }
   }
+
+  updateGoal(Goal updatedGoal) {}
+
+  deleteGoal(String id) {}
+
+  deleteReminder(String id) {}
+
+  updateReminder(Reminder updatedReminder) {}
 }
