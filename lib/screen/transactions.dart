@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models.dart';
 import 'dataprovider.dart';
 import 'profile.dart';
+import 'services.dart';
 
 class TransactionForm extends StatefulWidget {
   const TransactionForm({super.key});
@@ -28,6 +29,8 @@ class TransactionFormState extends State<TransactionForm> {
   String _type = 'expense';
   String _category = '';
 
+  late CategoryPredictionService _predictionService;
+
   final List<String> _incomeCategories = [
     'Salary',
     'Freelance',
@@ -36,6 +39,7 @@ class TransactionFormState extends State<TransactionForm> {
     'Refund',
     'Other',
   ];
+
   final List<String> _expenseCategories = [
     'Food',
     'Housing',
@@ -52,11 +56,58 @@ class TransactionFormState extends State<TransactionForm> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _predictionService = CategoryPredictionService();
+    _initializeService();
+  // _descriptionController.addListener(_predictCategory);
+  }
+
+  Future<void> _initializeService() async {
+    await _predictionService.loadModel();
+    // The new CategoryPredictionService logs errors internally,
+    // so we don't need to set an error message here unless we want to display it
+  }
+
+  Future<void> _predictCategory() async {
+    final description = _descriptionController.text;
+    if (description.isEmpty) {
+      setState(() {
+        _category = '';
+      });
+      return;
+    }
+
+    final predictedCategory = await _predictionService.predictCategory(description);
+    print("kongu$predictedCategory");
+    setState(() {
+      if (predictedCategory != null) {
+        // Ensure the predicted category matches one of the dropdown options
+        if (_type == 'expense' && _expenseCategories.contains(predictedCategory)) {
+          _category = predictedCategory;
+        } else if (_type == 'income' && _incomeCategories.contains(predictedCategory)) {
+          _category = predictedCategory;
+        } else {
+          _category = '';
+          _message = 'Predicted category not applicable for ${_type == 'expense' ? 'expense' : 'income'}. Please select manually.';
+          _messageColor = const Color(0xFFef4444);
+        }
+      } else {
+        _category = '';
+        _message = 'Unable to predict category. Please select manually.';
+        _messageColor = const Color(0xFFef4444);
+      }
+    });
+  }
+
+  @override
   void dispose() {
+    _descriptionController.removeListener(_predictCategory);
     _descriptionController.dispose();
     _amountController.dispose();
     _dateController.dispose();
     _notesController.dispose();
+    _predictionService.dispose();
     super.dispose();
   }
 
@@ -65,8 +116,12 @@ class TransactionFormState extends State<TransactionForm> {
     _amountController.clear();
     _dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
     _notesController.clear();
-    _type = 'expense';
-    _category = '';
+    setState(() {
+      _type = 'expense';
+      _category = '';
+      _message = null;
+      _messageColor = null;
+    });
   }
 
   Future<void> _handleSubmit() async {
@@ -76,6 +131,8 @@ class TransactionFormState extends State<TransactionForm> {
 
     setState(() {
       _loading = true;
+      _message = null;
+      _messageColor = null;
     });
 
     try {
@@ -178,7 +235,8 @@ class TransactionFormState extends State<TransactionForm> {
                                         foregroundColor: _type == 'expense'
                                             ? Colors.white
                                             : Theme.of(context).colorScheme.onSurface,
-                                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                                        side: BorderSide(
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -189,8 +247,10 @@ class TransactionFormState extends State<TransactionForm> {
                                         children: [
                                           Icon(Icons.arrow_upward, size: 16),
                                           SizedBox(width: 8),
-                                          Text('Expense',
-                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                                          Text(
+                                            'Expense',
+                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -211,7 +271,8 @@ class TransactionFormState extends State<TransactionForm> {
                                         foregroundColor: _type == 'income'
                                             ? Colors.white
                                             : Theme.of(context).colorScheme.onSurface,
-                                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                                        side: BorderSide(
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -222,8 +283,10 @@ class TransactionFormState extends State<TransactionForm> {
                                         children: [
                                           Icon(Icons.arrow_downward, size: 16),
                                           SizedBox(width: 8),
-                                          Text('Income',
-                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                                          Text(
+                                            'Income',
+                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -242,11 +305,15 @@ class TransactionFormState extends State<TransactionForm> {
                                         width: isWide ? constraints.maxWidth / 2 - 8 : constraints.maxWidth,
                                         child: TextFormField(
                                           controller: _descriptionController,
+
+                                          onEditingComplete: (){
+                                            print("kongu");_predictCategory();},
+
                                           decoration: const InputDecoration(
                                             labelText: 'Description *',
                                             hintText: 'What was this transaction for?',
                                             border: OutlineInputBorder(),
-                                            prefixIcon: Icon(Icons.description),
+                                            prefixIcon: Icon(Icons.person),
                                           ),
                                           validator: (value) =>
                                           value!.isEmpty ? 'Please enter a description' : null,

@@ -548,7 +548,6 @@ class _EditGoalDialogState extends State<EditGoalDialog> {
     });
 
     final dataProvider = Provider.of<DataProvider>(context, listen: false);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final updatedGoal = Goal(
       id: widget.goal.id,
@@ -562,28 +561,43 @@ class _EditGoalDialogState extends State<EditGoalDialog> {
     );
 
     try {
-      await dataProvider.updateGoal(updatedGoal);
-      await Future.delayed(const Duration(milliseconds: 500)); // Small delay to ensure Firestore sync
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('Goal updated successfully')),
-      );
-      debugPrint("Goal updated, closing dialog");
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.pop(context); // Close the dialog
-        debugPrint("Dialog closed");
-      } else {
-        debugPrint("Cannot pop dialog: Navigator.canPop returned false");
+      final success = await dataProvider.updateGoal(updatedGoal);
+      if (!success) {
+        throw Exception('Failed to update goal in Firestore');
       }
+      debugPrint("Goal updated successfully");
     } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Failed to update goal: $e')),
-      );
-    } finally {
       if (mounted) {
         setState(() {
           _isUpdatingGoal = false;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update goal: $e')),
+        );
       }
+      return;
+    }
+
+    // Close the dialog immediately
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+      debugPrint("Dialog closed after successful update");
+    } else {
+      debugPrint("Cannot pop dialog: Navigator.canPop returned false");
+    }
+
+    // Show the success message on the parent screen
+    if (mounted) {
+      setState(() {
+        _isUpdatingGoal = false;
+      });
+      // Use ScaffoldMessenger.of(Navigator.of(context).context) to show SnackBar on the parent screen
+      ScaffoldMessenger.of(context.findAncestorStateOfType<ScaffoldMessengerState>()!.context).showSnackBar(
+        const SnackBar(
+          content: Text('Goal updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 
@@ -694,7 +708,9 @@ class _EditGoalDialogState extends State<EditGoalDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
+          onPressed: _isUpdatingGoal
+              ? null
+              : () {
             if (mounted && Navigator.canPop(context)) {
               Navigator.pop(context);
               debugPrint("Dialog cancelled");

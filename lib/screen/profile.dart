@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:moneynest/main.dart'; // Import main.dart to access ThemeProvider
+import 'package:moneynest/screen/dataprovider.dart'; // Import DataProvider to access financial data
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,6 +55,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final dataProvider = Provider.of<DataProvider>(context);
+
+    // Calculate some basic analysis from DataProvider
+    double totalTransactions = dataProvider.transactions.fold(0.0, (sum, tx) => sum + tx.amount);
+    int totalGoals = dataProvider.goals.length;
+    int totalReminders = dataProvider.reminders.length;
 
     return Scaffold(
       body: Stack(
@@ -127,6 +134,61 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   const SizedBox(height: 32),
+                  // Analysis of Reports Section
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardTheme.color,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Analysis of Reports',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Total Transactions: \$${totalTransactions.toStringAsFixed(2)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Total Goals: $totalGoals',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Total Reminders: $totalReminders',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Logout Button
                   ElevatedButton(
                     onPressed: () => _signOut(context),
                     style: ElevatedButton.styleFrom(

@@ -55,16 +55,36 @@ class DataProvider with ChangeNotifier {
       return false;
     }
     try {
-      await FirebaseFirestore.instance
+      // Optimistically add the reminder to the local state for immediate UI feedback
+      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      final tempReminder = Reminder(
+        id: tempId,
+        title: reminder.title,
+        amount: reminder.amount,
+        dueDate: reminder.dueDate,
+        type: reminder.type,
+        notes: reminder.notes,
+        createdAt: reminder.createdAt,
+      );
+      _reminders.add(tempReminder);
+      notifyListeners();
+      debugPrint("Local reminder added for user $_userId");
+
+      // Perform the Firestore write
+      final docRef = await FirebaseFirestore.instance
           .collection('users')
           .doc(_userId)
           .collection('reminders')
           .add(reminder.toMap());
-      debugPrint("Reminder added for user $_userId");
+      debugPrint("Reminder added to Firestore for user $_userId");
+
+      // Fetch the latest data to ensure consistency
       await fetchReminders();
       return true;
     } catch (e) {
       debugPrint("Failed to add reminder: $e");
+      // If Firestore write fails, revert the local change
+      await fetchReminders();
       return false;
     }
   }
@@ -127,11 +147,126 @@ class DataProvider with ChangeNotifier {
     }
   }
 
-  updateGoal(Goal updatedGoal) {}
+  Future<bool> deleteReminder(String id) async {
+    if (_userId.isEmpty) {
+      debugPrint("User not authenticated");
+      return false;
+    }
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .collection('reminders')
+          .doc(id)
+          .delete();
+      debugPrint("Reminder deleted for user $_userId");
+      await fetchReminders();
+      return true;
+    } catch (e) {
+      debugPrint("Failed to delete reminder: $e");
+      return false;
+    }
+  }
 
-  deleteGoal(String id) {}
+  Future<bool> deleteGoal(String id) async {
+    if (_userId.isEmpty) {
+      debugPrint("User not authenticated");
+      return false;
+    }
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .collection('goals')
+          .doc(id)
+          .delete();
+      debugPrint("Goal deleted for user $_userId");
+      await fetchGoals();
+      return true;
+    } catch (e) {
+      debugPrint("Failed to delete goal: $e");
+      return false;
+    }
+  }
 
-  deleteReminder(String id) {}
+  Future<bool> updateGoal(Goal updatedGoal) async {
+    if (_userId.isEmpty) {
+      debugPrint("User not authenticated");
+      return false;
+    }
+    try {
+      // Optimistically update the local state for immediate UI feedback
+      final index = _goals.indexWhere((goal) => goal.id == updatedGoal.id);
+      if (index != -1) {
+        _goals[index] = updatedGoal;
+        notifyListeners();
+        debugPrint("Local goal updated for user $_userId");
+      }
 
-  updateReminder(Reminder updatedReminder) {}
+      // Perform the Firestore update
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .collection('goals')
+          .doc(updatedGoal.id)
+          .update(updatedGoal.toMap());
+      debugPrint("Goal updated in Firestore for user $_userId");
+
+      // Fetch the latest data to ensure consistency
+      await fetchGoals();
+      return true;
+    } catch (e) {
+      debugPrint("Failed to update goal: $e");
+      // If Firestore update fails, revert the local change
+      await fetchGoals();
+      return false;
+    }
+  }
+
+  Future<bool> updateReminder(Reminder updatedReminder) async {
+    if (_userId.isEmpty) {
+      debugPrint("User not authenticated");
+      return false;
+    }
+    try {
+      // Validate the reminder ID
+      if (updatedReminder.id == null || updatedReminder.id!.isEmpty) {
+        debugPrint("Invalid reminder ID: ${updatedReminder.id}");
+        throw Exception("Reminder ID cannot be null or empty");
+      }
+
+      // Validate the reminder data
+      final reminderMap = updatedReminder.toMap();
+      debugPrint("Reminder data to update: $reminderMap");
+
+      // Optimistically update the local state for immediate UI feedback
+      final index = _reminders.indexWhere((reminder) => reminder.id == updatedReminder.id);
+      if (index != -1) {
+        _reminders[index] = updatedReminder;
+        notifyListeners();
+        debugPrint("Local reminder updated for user $_userId");
+      } else {
+        debugPrint("Reminder with ID ${updatedReminder.id} not found in local state");
+      }
+
+      // Perform the Firestore update
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .collection('reminders')
+          .doc(updatedReminder.id)
+          .update(reminderMap);
+      debugPrint("Reminder updated in Firestore for user $_userId");
+
+      // Fetch the latest data to ensure consistency
+      await fetchReminders();
+      return true;
+    } catch (e) {
+      debugPrint("Failed to update reminder: $e");
+      debugPrint("Stack trace: ${StackTrace.current}");
+      // If Firestore update fails, revert the local change
+      await fetchReminders();
+      return false;
+    }
+  }
 }

@@ -722,68 +722,70 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     debugPrint("Building MainScreen, selected index: $_selectedIndex");
     return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              const SizedBox(height: 60),
-              Expanded(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SizedBox.expand(
-                    child: _screens[_selectedIndex],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                const SizedBox(height: 60),
+                Expanded(
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SizedBox.expand(
+                      child: _screens[_selectedIndex],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          // Title in the center
-          Positioned(
-            top: 16,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
-                _titles[_selectedIndex],
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-              ),
+              ],
             ),
-          ),
-          // Profile Icon on the right
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage()),
-                  );
-                  debugPrint("Navigated to ProfilePage");
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.person_rounded,
-                    size: 22,
-                    color: Color(0xFF4CAF50),
+            // Title in the center
+            Positioned(
+              top: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Text(
+                  _titles[_selectedIndex],
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            // Profile Icon on the right
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfilePage()),
+                    );
+                    debugPrint("Navigated to ProfilePage");
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.person_rounded,
+                      size: 22,
+                      color: Color(0xFF4CAF50),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
